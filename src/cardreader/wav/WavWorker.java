@@ -13,6 +13,7 @@ public class WavWorker extends SwingWorker<Boolean,Boolean> {
 
     private Model mModel;
     private String mFilePath;
+    private boolean mResetToWaiting = true;
 
     public WavWorker(Model model, String filePath) {
         this.mModel = model;
@@ -29,11 +30,19 @@ public class WavWorker extends SwingWorker<Boolean,Boolean> {
 
     @Override
     public void done() {
-        mModel.clearData(true);
-        mModel.setStatusText("Waiting");
-        mModel.clearGreetAndName();
-        mModel.notifyObservers();
-        mModel.clearData(false);
+        if (mResetToWaiting){
+            mModel.clearData(true);
+            mModel.setStatusText("Waiting");
+            mModel.clearGreetAndName();
+            mModel.notifyObservers();
+            mModel.clearData(false);
+        }
     }
+
+    public void setResetToWaiting(boolean reset) {
+        this.mResetToWaiting = reset;
+    }
+
+
 
 }

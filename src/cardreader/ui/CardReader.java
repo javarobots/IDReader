@@ -9,6 +9,7 @@ package cardreader.ui;
 
 import cardreader.datahandling.EventTypes;
 import cardreader.datahandling.ReaderKeyListener;
+import cardreader.wav.WavWorker;
 import commonutilities.swing.ComponentPosition;
 import java.util.Observable;
 import java.util.Observer;
@@ -20,6 +21,8 @@ import java.util.Observer;
 public class CardReader extends javax.swing.JFrame implements Observer {
 
     private static Controller mController;
+    private static Model mModel;
+    private boolean mReady = false;
 
     /**
     * @param args the command line arguments
@@ -28,11 +31,11 @@ public class CardReader extends javax.swing.JFrame implements Observer {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Model model = new Model();
-                mController = new Controller(model);
-                CardReader reader = new CardReader(model);
-                model.addObserver(reader);
-                model.notifyObservers();
+                mModel = new Model();
+                mController = new Controller(mModel);
+                CardReader reader = new CardReader(mModel);
+                mModel.addObserver(reader);
+                mModel.notifyObservers();
                 ComponentPosition.centerFrame(reader);
                 reader.setVisible(true);
             }
@@ -315,6 +318,12 @@ public class CardReader extends javax.swing.JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof Model){
+            if (!mReady){
+                WavWorker player = new WavWorker(mModel,"/wavs/ready_mary.wav");
+                player.setResetToWaiting(false);
+                player.execute();
+                mReady = true;
+            }
             Model m = (Model)o;
             mStatusTextLabel.setText(m.getStatusText());
             mTextField.setEnabled(m.isEnableDataTextField());

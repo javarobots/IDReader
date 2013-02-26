@@ -2,12 +2,11 @@
 package cardreader.datahandling;
 
 import cardreader.ui.Model;
-import cardreader.wav.WavPlayer;
+import cardreader.wav.WavWorker;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
@@ -41,22 +40,15 @@ public class DataProcessingWorker extends SwingWorker<Boolean, Object> {
             mModel.setName(personnelData.getName(idNumber));
             mModel.notifyObservers();
             saveCardSwipe();
-            WavPlayer player = new WavPlayer();
-            File f = new File(mModel.getPreferences().getFileLocation() + "/wavs/valid_mary.wav");
-            player.play(f);
+            WavWorker player = new WavWorker(mModel,"/wavs/valid_mary.wav");
+            player.execute();
         } else {
             mModel.setGreeting("Invalid ID Number");
             mModel.setName("See Cadre!");
             mModel.notifyObservers();
-            WavPlayer player = new WavPlayer();
-            File f = new File(mModel.getPreferences().getFileLocation() + "/wavs/invalid_mary.wav");
-            player.play(f);
+            WavWorker player = new WavWorker(mModel,"/wavs/invalid_mary.wav");
+            player.execute();
         }
-        mModel.clearData(true);
-        mModel.setStatusText("Waiting");
-        mModel.clearGreetAndName();
-        mModel.notifyObservers();
-        mModel.clearData(false);
         return true;
     }
 

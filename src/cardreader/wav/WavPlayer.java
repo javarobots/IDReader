@@ -18,31 +18,20 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public class WavPlayer {
 
-    public void play(File file)
-{
-    try
-    {
-        Clip clip = AudioSystem.getClip();
-        clip.open(AudioSystem.getAudioInputStream(file));
-        clip.start();
-        while (!clip.isRunning()) {
-            Thread.sleep(10);
+    public void play(File file) {
+        try {
+            try (Clip clip = AudioSystem.getClip()) {
+                clip.open(AudioSystem.getAudioInputStream(file));
+                clip.start();
+                while (!clip.isRunning()) {
+                    Thread.sleep(10);
+                }
+                while (clip.isRunning()) {
+                    Thread.sleep(10);
+                }
+            }
+        } catch (LineUnavailableException | UnsupportedAudioFileException | IOException | InterruptedException exc) {
+            exc.printStackTrace(System.out);
         }
-        while (clip.isRunning()) {
-            Thread.sleep(10);
-        }
-        clip.close();
     }
-    catch (LineUnavailableException | UnsupportedAudioFileException | IOException | InterruptedException exc) {
-        exc.printStackTrace(System.out);
-    }
-}
-
-    public static void main(String[] args) {
-        WavPlayer player = new WavPlayer();
-        URL dir_url = ClassLoader.getSystemResource("cardreader/wav/valid_mary.wav");
-        File f = new File(dir_url.getFile());
-        player.play(f);
-    }
-
 }

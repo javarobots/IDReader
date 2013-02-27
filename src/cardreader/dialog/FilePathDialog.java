@@ -2,6 +2,7 @@ package cardreader.dialog;
 
 import cardreader.preferences.ReaderPreferences;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -10,6 +11,7 @@ import javax.swing.JFileChooser;
 public class FilePathDialog extends javax.swing.JDialog {
 
     private ReaderPreferences mPreferences;
+    private boolean mForceRestart = true;
 
     /**
      * Creates new form FilePathDialog
@@ -19,12 +21,20 @@ public class FilePathDialog extends javax.swing.JDialog {
         initComponents();
     }
 
-    public FilePathDialog(java.awt.Frame parent, boolean modal, ReaderPreferences prefs) {
+    public FilePathDialog(java.awt.Frame parent, boolean modal, ReaderPreferences prefs, boolean forceRestart) {
         super(parent, modal);
         initComponents();
         this.mPreferences = prefs;
+        this.mForceRestart = forceRestart;
         if (prefs.isFileLocationSet()){
             mFilePathTextField.setText(prefs.getFileLocation());
+        }
+    }
+    
+    private void notifyRestart() {
+        if (mForceRestart){
+            JOptionPane.showMessageDialog(null, "You must restart the program.", "Restart", JOptionPane.OK_OPTION);
+            System.exit(0);
         }
     }
 
@@ -110,12 +120,16 @@ public class FilePathDialog extends javax.swing.JDialog {
 
     private void mCancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mCancelButtonActionPerformed
         this.dispose();
+        notifyRestart();
     }//GEN-LAST:event_mCancelButtonActionPerformed
 
     private void mOkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mOkButtonActionPerformed
-        mPreferences.setFileLocation(mFilePathTextField.getText());
-        mPreferences.setFileLocationSet(true);
+        if (!mFilePathTextField.getText().isEmpty()){
+            mPreferences.setFileLocation(mFilePathTextField.getText());
+            mPreferences.setFileLocationSet(true);
+        }
         this.dispose();
+        notifyRestart();
     }//GEN-LAST:event_mOkButtonActionPerformed
 
     private void mSelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mSelectButtonActionPerformed

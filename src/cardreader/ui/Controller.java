@@ -41,19 +41,21 @@ public class Controller {
     }
 
     public void clearAttendance() {
-        File dataFile = new File(mModel.getPreferences().getFileLocation() + "/attendanceData.txt");
-        if (dataFile.exists()){
-            try {
-                dataFile.delete();
-                dataFile.createNewFile();
-            } catch (IOException ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        if (JOptionPane.showConfirmDialog(null, "Are you sure you want to erase the attendance record? This can not be undone!", "Erase", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            File dataFile = new File(mModel.getPreferences().getFileLocation() + "/attendanceData.txt");
+            if (dataFile.exists()){
+                try {
+                    dataFile.delete();
+                    dataFile.createNewFile();
+                } catch (IOException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }
+        }            
     }
 
     public void setFileLocation() {
-        FilePathDialog dialog = new FilePathDialog(null,true,mModel.getPreferences());
+        FilePathDialog dialog = new FilePathDialog(null,true,mModel.getPreferences(), false);
         ComponentPosition.centerFrame(dialog);
         dialog.setVisible(true);
     }

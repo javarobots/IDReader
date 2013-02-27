@@ -53,7 +53,7 @@ public class IdData {
                 }
                 br.close();
             } else {
-                FilePathDialog dialog = new FilePathDialog(null, true, mPreferences);
+                FilePathDialog dialog = new FilePathDialog(null, true, mPreferences, true);
                 ComponentPosition.centerFrame(dialog);
                 dialog.setVisible(true);
             }

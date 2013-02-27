@@ -38,5 +38,9 @@ public class ReportTableModel extends AbstractTableModel {
         names.add(name);
         fireTableDataChanged();
     }
+    
+    public void clearData() {
+        names.clear();
+    }
 
 }

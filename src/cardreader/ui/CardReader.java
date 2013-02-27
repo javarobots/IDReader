@@ -9,6 +9,7 @@ package cardreader.ui;
 
 import cardreader.datahandling.EventTypes;
 import cardreader.datahandling.ReaderKeyListener;
+import cardreader.dialog.ReportTableModel;
 import cardreader.wav.WavWorker;
 import commonutilities.swing.ComponentPosition;
 import java.util.Observable;
@@ -33,6 +34,7 @@ public class CardReader extends javax.swing.JFrame implements Observer {
             public void run() {
                 mModel = new Model();
                 mController = new Controller(mModel);
+                mModel.setmController(mController);
                 CardReader reader = new CardReader(mModel);
                 mModel.addObserver(reader);
                 mModel.notifyObservers();
@@ -52,6 +54,11 @@ public class CardReader extends javax.swing.JFrame implements Observer {
     public CardReader(Model model) {
         initComponents();
         mTextField.addKeyListener(new ReaderKeyListener(mController));
+        ReportTableModel tableModel = new ReportTableModel();
+        mDataTable.setModel(tableModel);
+        model.setDataTableModel(tableModel);
+        mModel.setSelectedEvent(mEventComboBox.getSelectedItem().toString());
+                
     }
 
     /** This method is called from within the constructor to
@@ -69,7 +76,13 @@ public class CardReader extends javax.swing.JFrame implements Observer {
         jSeparator1 = new javax.swing.JSeparator();
         mGreetingLabel = new javax.swing.JLabel();
         mNameLabel = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        mExitButton = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JSeparator();
+        mEventComboBox = new javax.swing.JComboBox();
+        mScrollPane = new javax.swing.JScrollPane();
+        mDataTable = new javax.swing.JTable();
+        mNumberAbsentLabel = new javax.swing.JLabel();
+        mAbsentCountLabel = new javax.swing.JLabel();
         mMenuBar = new javax.swing.JMenuBar();
         mFileMenu = new javax.swing.JMenu();
         mClearAttendanceMenuItem = new javax.swing.JMenuItem();
@@ -100,17 +113,41 @@ public class CardReader extends javax.swing.JFrame implements Observer {
         mNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         mNameLabel.setText("Name");
 
-        jButton1.setText("Exit");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        mExitButton.setText("Exit");
+        mExitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                mExitButtonActionPerformed(evt);
             }
         });
+
+        mEventComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PT", "LLAB", "AS100", "AS200", "AS300", "AS400" }));
+        mEventComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mEventComboBoxActionPerformed(evt);
+            }
+        });
+
+        mDataTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        mScrollPane.setViewportView(mDataTable);
+
+        mNumberAbsentLabel.setText("Number Absent:");
+
+        mAbsentCountLabel.setText("000");
 
         mFileMenu.setText("File");
 
         mClearAttendanceMenuItem.setText("Clear Attendance");
-        mClearAttendanceMenuItem.setToolTipText("Clear the existing data file.");
+        mClearAttendanceMenuItem.setToolTipText("Clear the existing attendance file.");
         mClearAttendanceMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mClearAttendanceMenuItemActionPerformed(evt);
@@ -118,8 +155,8 @@ public class CardReader extends javax.swing.JFrame implements Observer {
         });
         mFileMenu.add(mClearAttendanceMenuItem);
 
-        mSaveAsMenuItem.setText("Save As...");
-        mSaveAsMenuItem.setToolTipText("Save the data file to a specified location.");
+        mSaveAsMenuItem.setText("Save Attendance As...");
+        mSaveAsMenuItem.setToolTipText("Save the attendance file to a specified location.");
         mSaveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mSaveAsMenuItemActionPerformed(evt);
@@ -210,17 +247,25 @@ public class CardReader extends javax.swing.JFrame implements Observer {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(mGreetingLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(mCardNumberLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(mStatusTextLabel)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(mNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                    .addComponent(jSeparator2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(mNumberAbsentLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(mAbsentCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(mExitButton))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(mScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(mStatusTextLabel)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(mCardNumberLabel)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(mTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(mEventComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -238,8 +283,17 @@ public class CardReader extends javax.swing.JFrame implements Observer {
                 .addComponent(mGreetingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mEventComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(mExitButton)
+                    .addComponent(mNumberAbsentLabel)
+                    .addComponent(mAbsentCountLabel))
                 .addContainerGap())
         );
 
@@ -259,7 +313,7 @@ public class CardReader extends javax.swing.JFrame implements Observer {
     }//GEN-LAST:event_mSetDataLocationMenuItemActionPerformed
 
     private void mSaveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mSaveAsMenuItemActionPerformed
-        mController.fileSaveAs();
+        mController.fileSaveAs(mEventComboBox.getSelectedItem().toString());
     }//GEN-LAST:event_mSaveAsMenuItemActionPerformed
 
     private void mPtMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mPtMenuItemActionPerformed
@@ -286,30 +340,40 @@ public class CardReader extends javax.swing.JFrame implements Observer {
         mController.runReport(EventTypes.AS400);
     }//GEN-LAST:event_mAs400MenuItemActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void mExitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mExitButtonActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_mExitButtonActionPerformed
+
+    private void mEventComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mEventComboBoxActionPerformed
+        mController.updateDataTable(mEventComboBox.getSelectedItem().toString());
+    }//GEN-LAST:event_mEventComboBoxActionPerformed
 
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JButton jButton1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel mAbsentCountLabel;
     private javax.swing.JMenuItem mAs100MenuItem;
     private javax.swing.JMenuItem mAs200MenuItem;
     private javax.swing.JMenuItem mAs300MenuItem;
     private javax.swing.JMenuItem mAs400MenuItem;
     private javax.swing.JLabel mCardNumberLabel;
     private javax.swing.JMenuItem mClearAttendanceMenuItem;
+    private javax.swing.JTable mDataTable;
+    private javax.swing.JComboBox mEventComboBox;
+    private javax.swing.JButton mExitButton;
     private javax.swing.JMenu mFileMenu;
     private javax.swing.JLabel mGreetingLabel;
     private javax.swing.JMenuItem mLlabMenuItem;
     private javax.swing.JMenuBar mMenuBar;
     private javax.swing.JLabel mNameLabel;
+    private javax.swing.JLabel mNumberAbsentLabel;
     private javax.swing.JMenuItem mPtMenuItem;
     private javax.swing.JMenu mReportMenu;
     private javax.swing.JMenuItem mSaveAsMenuItem;
+    private javax.swing.JScrollPane mScrollPane;
     private javax.swing.JMenuItem mSetDataLocationMenuItem;
     private javax.swing.JLabel mStatusTextLabel;
     private javax.swing.JTextField mTextField;
@@ -332,6 +396,8 @@ public class CardReader extends javax.swing.JFrame implements Observer {
             if (m.isClearData()){
                 mTextField.setText("");
             }
+            mAbsentCountLabel.setText(Integer.toString(mDataTable.getModel().getRowCount()));
+            ((ReportTableModel)mDataTable.getModel()).fireTableDataChanged();
         }
     }
 

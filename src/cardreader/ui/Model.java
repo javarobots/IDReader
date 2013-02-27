@@ -2,6 +2,7 @@
 package cardreader.ui;
 
 import cardreader.datahandling.IdData;
+import cardreader.dialog.ReportTableModel;
 import cardreader.preferences.ReaderPreferences;
 import java.util.Observable;
 import java.util.Observer;
@@ -19,6 +20,9 @@ public class Model extends Observable {
     private boolean mEnableDataTextField = true;
     private IdData mPersonnelData;
     private ReaderPreferences mPreferences;
+    private ReportTableModel mDataTableModel;
+    private String mSelectedEvent = null;
+    private Controller mController;
 
     public Model(){
         mPreferences = new ReaderPreferences();
@@ -99,6 +103,33 @@ public class Model extends Observable {
         return mPreferences;
     }
 
+    public void setDataTableModel(ReportTableModel dataTableModel) {
+        this.mDataTableModel = dataTableModel;
+    }
 
+    public ReportTableModel getDataTableModel() {
+        return mDataTableModel;
+    }
+
+    public String getSelectedEvent() {
+        return mSelectedEvent;
+    }
+
+    public void setSelectedEvent(String selectedEvent) {
+        this.mSelectedEvent = selectedEvent;
+    }
+
+    public Controller getController() {
+        return mController;
+    }
+
+    public void setmController(Controller controller) {
+        this.mController = controller;
+    }
+    
+    public void forceUpdate() {
+        setChanged();
+        notifyObservers();
+    }
 
 }

@@ -76,5 +76,10 @@ public class DataProcessingWorker extends SwingWorker<Boolean, Object> {
             }
         }
     }
+    
+    @Override
+    public void done() {
+        mModel.getController().updateDataTable(mModel.getSelectedEvent());
+    }
 
 }

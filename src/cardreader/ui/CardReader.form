@@ -113,7 +113,6 @@
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="mMenuBar"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -185,7 +184,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="mEventComboBox" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="mScrollPane" min="-2" pref="279" max="-2" attributes="0"/>
+              <Component id="mScrollPane" min="-2" pref="198" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="mExitButton" alignment="3" min="-2" max="-2" attributes="0"/>
